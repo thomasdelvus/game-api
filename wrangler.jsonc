@@ -1,0 +1,27 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "game-api",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-03-03",
+    "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "game",
+          "database_id": "baa710b5-194d-40be-98b8-9a1e735ad60c"
+        }
+    ],
+    "secrets_store_secrets": [
+        {
+            "store_id": "b3a7704f7f4b41efb337de745e8bbdef",
+            "binding": "SECRET",
+            "secret_name": "PLACEHOLDER_SECRET"
+        }
+    ],
+	"observability": {
+		"enabled": true
+	}
+}
