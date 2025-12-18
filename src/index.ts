@@ -13,6 +13,14 @@ app.use("*", cors());
 app.get("/", (c) => c.text("ok"));              // <- extra sanity route
 app.get("/health", (c) => c.json({ ok: true })); // <- the one we're testing
 
+
+app.get("/battles", async (c) => {
+  const results = await c.env.DB.prepare(
+    `SELECT battle_id, campaign_id, name, state_json, version, updated_at
+     FROM battles
+     ORDER BY updated_at DESC`
+  ).all();
+
 app.get("/battles/:battle_id", async (c) => {
   const battleId = c.req.param("battle_id");
 
@@ -27,13 +35,6 @@ app.get("/battles/:battle_id", async (c) => {
   if (!row) return c.json({ error: "Battle not found" }, 404);
   return c.json(row);
 });
-
-app.get("/battles", async (c) => {
-  const results = await c.env.DB.prepare(
-    `SELECT battle_id, campaign_id, name, state_json, version, updated_at
-     FROM battles
-     ORDER BY updated_at DESC`
-  ).all();
 
   return c.json({ count: results.results.length, rows: results.results });
 });
