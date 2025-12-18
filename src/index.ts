@@ -3,17 +3,15 @@ import { cors } from "hono/cors";
 
 type Env = {
   DB: D1Database;
-  // Keep this so the template's required secret binding doesn't break anything.
-  // We simply won't use it yet.
-  SECRET: SecretsStoreSecret;
+  SECRET: SecretsStoreSecret; // required by your wrangler.jsonc binding, unused for now
 };
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Optional but handy during early testing
 app.use("*", cors());
 
-app.get("/health", (c) => c.json({ ok: true }));
+app.get("/", (c) => c.text("ok"));              // <- extra sanity route
+app.get("/health", (c) => c.json({ ok: true })); // <- the one we're testing
 
 app.get("/battles/:battle_id", async (c) => {
   const battleId = c.req.param("battle_id");
@@ -26,11 +24,9 @@ app.get("/battles/:battle_id", async (c) => {
     .bind(battleId)
     .first();
 
-  if (!row) {
-    return c.json({ error: "Battle not found", battle_id: battleId }, 404);
-  }
-
+  if (!row) return c.json({ error: "Battle not found" }, 404);
   return c.json(row);
 });
 
-export default app;
+// This export shape matches Workers' expected handler 100% reliably
+export default { fetch: app.fetch };
