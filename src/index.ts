@@ -28,5 +28,16 @@ app.get("/battles/:battle_id", async (c) => {
   return c.json(row);
 });
 
+app.get("/battles", async (c) => {
+  const results = await c.env.DB.prepare(
+    `SELECT battle_id, campaign_id, name, state_json, version, updated_at
+     FROM battles
+     ORDER BY updated_at DESC`
+  ).all();
+
+  return c.json({ count: results.results.length, rows: results.results });
+});
+
+
 // This export shape matches Workers' expected handler 100% reliably
 export default { fetch: app.fetch };
